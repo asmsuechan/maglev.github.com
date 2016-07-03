@@ -6,28 +6,22 @@ title: MagLev
 
 # MagLev
 
-MagLev is a fast, stable, 64-bit [open source](https://github.com/MagLev/maglev/blob/master/Licenses/README.txt)
-implementation of the Ruby programming language and libraries built
-on top of VMware's GemStone/S 3.1 Virtual Machine.
+MagLevは高速で安定した 64bitの [オープンソースの](https://github.com/MagLev/maglev/blob/master/Licenses/README.txt) VMwareのGemStone/S 3.1 バーチャルマシンの上でビルドされたRuby言語とライブラリの処理系です。
 
-The MagLev VM takes full advantage of GemStone/S JIT to native code
-performance, distributed shared cache, fully ACID transactions, and
-enterprise class NoSQL data management capabilities to provide a
-robust and durable programming platform. It can transparently manage
-a much larger amount (terabytes) of data and code than will fit in memory.
-There are no restrictions on what types of objects, classes, blocks,
-threads or continuations that can be stored and executed.
+MagLev VMは堅牢で耐久性のあるプログラミングプラットフォームを提供するためにフルに分散共有キャッシュや完全なACIDトランザクションやエンタープライズクラスのNoSQLデータ管理機能などのGemStone/S JITのネイティブコードの機能を利用します。
+これはメモリに収まるより多くの、テラバイト級のデータやコードをそのまま管理することができます。
+このデータにはオブジェクトやクラス、ブロック、スレッド、またストアされているか実行されているかなどの制限はありません。
 
-MagLev 1.0.0 was released on October 31, 2011.
+MagLev 1.0.0 は2011年10月31日にリリースされました。
 
-# Get Started
+# MagLevを始める
 
-If you are interested in persistent distributed Ruby objects, [get started
-with MagLev](/docs/get_started.html).
+もし分散されたRubyオブジェクトの永続化に興味があるなら[MagLevを始める](/maglev.github.com/docs/get_started.html) を見てください。
 
 # Licensing & Pricing
 
-MagLev itself (the Ruby & Smalltalk source released on Github) is free and [open source](https://github.com/MagLev/maglev/blob/master/Licenses/README.txt). 
+MagLevは無料で [オープンソース](https://github.com/MagLev/maglev/blob/master/Licenses/README.txt) です。
 
-To run MagLev you'll also need a GemStone/S Server. There is a [Web Edition of GemStone/S](http://seaside.gemstone.com/docs/GLASS-Pricing-1201.htm) (a.k.a GLASS) you may use at no charge to develop, deploy, and distribute MagLev applications, as long as you abide by the terms of the [License](http://seaside.gemstone.com/docs/GLASS-License.pdf) and the [resource limits](http://seaside.gemstone.com/docs/GLASS-Pricing-1201.htm) imposed by the included keyfile. This free version should be sufficient for most small to medium sized projects. 
-You may purchase higher capacity [Web Editions of GemStone/S](http://seaside.gemstone.com/docs/GLASS-Pricing-1201.htm) if needed.
+MagLevを実行するにはGemStone/S サーバーが必要です。リファレンスがあります [Web Edition of GemStone/S](http://seaside.gemstone.com/docs/GLASS-Pricing-1201.htm) (a.k.a GLASS)。 あなたは自由に開発やMagLevアプリケーションの公開を [ライセンス](http://seaside.gemstone.com/docs/GLASS-License.pdf) とkeyfileにより課された [リソースの限界](http://seaside.gemstone.com/docs/GLASS-Pricing-1201.htm) に沿う限り自由に行っても良いです。
+このフリーバージョンで小規模または中規模プロジェクトには十分です。
+もし必要ならより良い性能の [Web Editions of GemStone/S](http://seaside.gemstone.com/docs/GLASS-Pricing-1201.htm) を購入できます。
