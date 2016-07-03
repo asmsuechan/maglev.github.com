@@ -2,100 +2,89 @@
 title: MagLev Development
 layout: docs
 ---
-# Developing MagLev itself
+# MagLevを開発する
 
-## Step 1: Install MagLev from GitHub
+## ステップ1: GitHubからMagLevをインストール
 
-First, build MagLev from source [as described
-here](/docs/build.html). Make sure to run the tests and check that
-they pass.
+初めにMagLevを[ここ](/maglev.github.com/docs/build.html)で説明したようにソースコードからビルドします。また、テストが通ることを確認してください。
 
-## Step 2: Setup your environment
+## ステップ2: 環境構築
 
-To work with MagLev from the source tree, you have to run commands
-from the <tt>bin</tt> directory of the repository. You can link the
-checkout to <tt>rbenv/.versions/maglev-head</tt> if you use rbenv, or
-manage your <tt>PATH</tt> in some other way. It's important you do
+ソースコードからMagLevをインストールした場合、<tt>bin</tt>フォルダからコマンドを実行しなければなりません。
+もしあなたがrbenvを使っているのなら<tt>rbenv/.versions/maglev-head</tt>にチェックアウトしてリンクするか <tt>PATH</tt> 環境変数などを設定できます。
+これは、幾つかのコマンドは他のRubyの <tt>rake</tt>やMagLevから実行しなければならないので非常に重要なことです。
+It's important you do
 manage it somehow, because some commands have to be run with another
 Ruby's <tt>rake</tt>, and some can be run from MagLev.
 
-Some of the scripts and rake tasks written for developers additionally
-require you to set a few environment variables. So, assuming you are
-in the top-folder of your MagLev repository, run the following:
+開発者のために書かれたスクリプトやrakeタスクのいくつかは環境変数のセットを必要とします。
+ですので、MagLevをcloneしたフォルダのトップで以下を実行してください:
 
     $ export MAGLEV_HOME="$(pwd)"
     $ export GEMSTONE_GLOBAL_DIR=$MAGLEV_HOME
     $ export GEMSTONE="$MAGLEV_HOME/gemstone"
 
-## Step 3: Building a stone from first principles
+## ステップ3: 第一原理よりstoneをビルド
 
-If you've successfully followed the
-[build instructions](/docs/build.html), you already have a working
-image. But as a developer, you might run into situations where you
-break your stone and/or build process in one of several ways, so we'll
-walk through the process of manually creating a fresh image from the
-Smalltalk image provided with Gemstone/S.
+もしこの[MagLevをビルドする](/maglev.github.com/docs/build.html)を終えているなら、既に動いているイメージがあるはずです。
+ですが、いくつかの方法でstoneプロセスを壊したり作ったりする場面に遭遇することがあるでしょう。私たちは自動でプロセスを渡りGemstone/Sで提供されるSmalltalkイメージから新しいイメージ作ります。
 
+説明したそれぞれのステップにおいて何が起きているかや特定の領域でどうやって開発したいかを説明します。
 At each step I'll explain what's going on and how you might want to
 develop in that particular area.
 
 <div style="padding: 2em;">
 <em>Note:</em>
-Most of these commands have to be run with another
-Ruby. MagLev by default doesn't include a script named <tt>ruby</tt>,
-only <tt>maglev-ruby</tt>. To avoid confusion, make sure
-<tt>$MAGLEV_HOME/bin</tt> is at the end of your
-<tt>$PATH</tt>. Whenever we have to run something with MagLev, I will
-always use <tt>maglev-ruby -S</tt> style invocations.
+これらのコマンドの多くは他のRubyで実行されるべきです。
+MagLevには標準で <tt>ruby</tt> という名前のスクリプトを含んでおらず、代わりに <tt>maglev-ruby</tt> コマンドのみが存在します。
+混乱を避けるため、 <tt>$MAGLEV_HOME/bin</tt> が <tt>$PATH</tt> 環境変数の最後にあることを確認してください。
+私たちがMagLevで何かを動かす時はいつも <tt>maglev-ruby -S</tt> を使っています。
 </div>
 
-### Clean everything
+### 全てを消す
 
-If at any time your image seems broken or you are afraid that some
-code has been persisted that you don't know how else to remove, you
-can just delete the Ruby image using the clobber task.
+イメージが壊れたと思ったりいくつかのコードが永続化されて消す方法が分からない時などは以下のclobberタスクを実行するだけでRubyイメージが削除されます。
 
     $ rake build:clobber
 
-### Prepare the Smalltalk image
+### Smalltalkイメージの準備
 
-Ruby and Smalltalk run on the same VM and image, but there are a few
-changes that the base Smalltalk image needs in order to run even basic
-Ruby code. That's the code you will find in the <tt>src/smalltalk/ruby</tt>
-directory. These are extensions to the core classes of the Smalltalk
-system, and you shouldn't normally have to worry about those. If you
-ever do need to change any of them, you will have to clobber and start
-afresh. You can create a basic Ruby image using
+RubyとSmalltalkは同じVMとイメージで動きますが、SmalltalkイメージがRubyコードを実行するためにいくつかの違いがあります。
+そのコードは <tt>src/smalltalk/ruby</tt> にあります。
+これらはSmalltalkのコアクラスの拡張となっており、普通は気にしなくてもいいです。
+もしあなたがこれらのどれかを変更する必要があるなら、イメージを一度clobberで削除して新たに起動するべきです。
+そしてRubyイメージを以下のコマンドで作成することができます。
 
     $ rake build:filein
 
-This will <tt>file in</tt> (Smalltalker speak for loading code and
-persisting it in an image) the basic Ruby code, as well as Monticello
-(a Smalltalk VCS) and the basic stuff you need to connect to the Stone
-from a Smalltalk image using [GemTools](/docs/gemtools.html).
+このコマンドはRubyコードを組み込みます (Smalltakerはコードをロードしてそれをイメージに永続化するためのコードを書きます) また、Monticello(SmalltalkのVCS)も同様にSmalltalkイメージからStoneに接続するために [GemTools](/maglev.github.com/docs/gemtools.html)を使います。
 
+もしこのタスクを2回走らせたら2回目は失敗してイメージを使用不可状態にします。
 If you run this task twice in succession, the second run will fail and
 possibly leave your image in an unusable state.
 
-### Load Ruby core
+### Rubyコアのロード
 
 You know how, on MRI, a lot of core functionality is implemented in C?
+MagLevを使っている時、もしあなたがCが好きでないなら少しいい状況かもしれません。
 If you don't like C, then on MagLev, the situation is a little nicer
+基本構造やC/C++で実装されたパーサ
+Rubyコアライブラリの多くは実はSmalltalkで書かれている。
 for you. While the VM, the primitives and the parser are implemented
 in C/C++, lots of what makes up the Ruby core library is actually
 written in Smalltalk. That code used to be managed in Monticello, and
-is now included in file-based form in <tt>src/packages</tt>. This is
-actually a [FileTree](https://github.com/dalehenrich/FileTree)
-repository, so you can still manage those packages from Monticello in
-[GemTools](/docs/gemtools.html).
+そのコードはMonticelloで管理されたものであり、今 <tt>src/packages</tt> に含まれています。
+これは実は[FileTree](https://github.com/dalehenrich/FileTree)であり、まだ[GemTools](/maglev.github.com/docs/gemtools.html)のMonticelloからそれらのパッケージを管理できます。
 
     $ rake build:packages
 
+このコマンドは(Smalltalkで書かれている限り)Rubyコアコードをstoneで起動します。
+もしMagLevで開発するなら、2つの方法があります:
 That invocation will load the Ruby core code (as far as it is written
 in Smalltalk) into the stone. If you want to develop on MagLev, you
 might work a lot with this code, and there's two ways to do that:
 
-##### For Smalltalkers
+##### Smalltalker用
 
 Developers who know either Gemstone/S or Squeak/Pharo and are
 comfortable working with Monticello and the image based tools should
@@ -162,41 +151,42 @@ Ruby code. Like this:
     $ maglev-ruby -e 'p MAGLEV_VERSION'
     "1.0.0"
 
-## Step 4: Great rejoicing
+## ステップ4: 大きな喜び
 
-That's it, you have a basic development environment. You can now pick a
-feature or try and [fix an issue](https://github.com/MagLev/maglev/issues).
-If you don't know where the problem is, look around the code and get a feel 
-for what goes where.
+あなたは基本的な開発環境を作りました。あなたは機能開発や[バグ修正](https://github.com/MagLev/maglev/issues)ができるようになりました。
+もしどこに問題があるか分からない時は、どこに何があるか知るためにコードを眺めましょう。
 
-## Further Topics
+## 進んだトピック
 
-#### Looking at code with Topaz
+#### Topazでコードを見る
 
+もし <tt>src/kernel</tt> にRubyコードを見たら、<strong><tt>原始的</tt></strong> なクラスレベルの呼び出しを見つけることができます。
 If you look through the Ruby code in <tt>src/kernel</tt>, you will
 find class-level calls to <strong><tt>primitive</tt></strong>. These
+これらはSmalltalkのメソッドをRubyのメソッドにバインドします。
+これらのSmalltalkのメソッドは <tt>src/smalltalk</tt> や <tt>stc/packages</tt> ディレクトリでよく見ますが、これらはイメージにしかすぎません。
 bind Ruby method names to Smalltalk methods. These Smalltalk methods
 are often found under either the <tt>src/smalltalk</tt> or
 <tt>src/packages</tt> directories, but they may also be just in the
 image. To look at what's currently available in the image, you can use
+イメージ中で何が現在使用可能か見るためにGemtools(上述)か、GemStone/Sにある <strong>topaz</strong> を使います。
 Gemtools (see above), or <strong>topaz</strong>, which ships with
 GemStone/S.
 
-Provided your environment variables are set, and you are in your
-maglev checkout, run this:
+環境変数がセットされていて、maglevのホームディレクトリにいる場合、以下を実行してください:
 
     $ bin/maglev startnetldi
     $ gemstone/bin/topaz
-	*snip*
-	topaz> set user DataCurator password swordfish gemstone maglev
-	topaz> login
-	*snip*
-	successful login
-	topaz 1>
+      *snip*
+      topaz> set user DataCurator password swordfish gemstone maglev
+      topaz> login
+      *snip*
+      successful login
+      topaz 1>
 
-This logged you into the stone "maglev" as DataCurator (the default user).
+これは(デフォルトユーザーの)DataCuratorとしてstone "maglev"にログを取りました。
 
-	topaz 1> look Module >> rubyName
+    topaz 1> look Module >> rubyName
     
     category: '*maglev-runtime'
     method: Module
@@ -211,7 +201,7 @@ is currently loaded in the stone (useful for comparing what's in your
 files and what's in the stone).
 
     topaz 1> set class Object
-	topaz 1> rubylook meth inspect
+    topaz 1> rubylook meth inspect
     method: Object
       inspect#0*&
         <bridge method, objId 188217345>
@@ -221,7 +211,7 @@ files and what's in the stone).
         self.__inspect
       end
     # method starts at line 324 of /home/tim/Devel/maglev/src/kernel/bootstrap/Object.rb
-	topaz 1>
+    topaz 1>
 
 And here you looked at the Ruby implementation of
 Object#inspect. Notice how the stone sees a method
