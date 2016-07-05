@@ -3,17 +3,17 @@ title: Get Started with MagLev
 layout: docs
 ---
 
-# Get Started with MagLev
+# MagLevを始める
 
-1. Install MagLev with [RVM](http://rvm.beginrescueend.com):
+1. [RVM](http://rvm.beginrescueend.com)でMagLevをインストールする:
 
        rvm install maglev
        rvm use maglev
 
-   Or, follow these more [detailed instructions](/docs/build.html) to build
-   your own MagLev from source.
+   もしくはこちらの [詳細](/maglev.github.com/docs/build.html) から
+   ソースコードからビルドしてください。
 
-1. Check status of MagLev server
+2. MagLevサーバーの状態を確認
 
        $ maglev status
        MAGLEV_HOME = /users/pmclain/.rvm/rubies/maglev-1.0.0
@@ -22,19 +22,19 @@ layout: docs
          OK    3.1.0     pmclain   48498 55390 Oct 31 10:06 Stone  maglev
          OK    3.1.0     pmclain   48499 55382 Oct 31 10:06 cache  maglev~3330cca3ca1d1f74
 
-   If the server is not running, you'll see output like:
+   もしサーバーが起動していなかったら以下のように出力されます:
 
        gslist[Info]: No GemStone servers.
 
-1. Run some Ruby!
+3. Rubyを実行しましょう!
 
        $ maglev-ruby $MAGLEV_HOME/examples/hello_maglev.rb
        Hello from:
          RUBY_VERSION: 1.8.7
          RUBY_ENGINE: maglev
 
-# Next
+# 次は
 
-* [Learn about MagLev](/docs/learn.html)
-* Play with the [MagLev examples](https://github.com/MagLev/maglev/tree/master/examples)
+* [MagLevについて知る](/maglev.github.com/docs/learn.html)
+* MagLevを使ってみる [MagLev examples](https://github.com/MagLev/maglev/tree/master/examples)
 
