@@ -37,18 +37,21 @@ have.
 
 2. エラー発生時、MagLevはデバッガーで止まり `topaz 1> ` プロンプトが表示されます:
 
+```
        error , a ZeroDivide occurred (error 2026), reason:numErrIntDivisionByZero, attempt to divide 1 by zero,
                     during /Users/pmclain/GemStone/checkouts/the_script_that_breaks.rb
        ERROR 2026 , a ZeroDivide occurred (error 2026), reason:numErrIntDivisionByZero, attempt to divide 1 by zero (ZeroDivisionError)
        topaz 1> exitifnoerror
        End of initialization files
        topaz 1>
+```
 
 3. デバッガーにスタックトレースを表示させる
 
-   First tell topaz to copy output to a file `output push
-   <some_file_name>`, then print the stack trace with the `stack` command:
+   まずtopazに `output push <some_file_name>` で出力を保存するようにさせ、
+   `stack` コマンドでスタックトレース表示します:
 
+```
        topaz 1> output push maglev_stack.txt
        topaz 1> stack
        ==> 1 AbstractException >> _outer:with:        (envId 0) @8 line 19
@@ -64,6 +67,7 @@ have.
            prevSelf nil
 
        ...more stack trace...
+```
 
 4. MagLev VMを終了するために exit と入力する:
 
