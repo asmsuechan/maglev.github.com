@@ -3,49 +3,42 @@ layout: docs
 title: Learn MagLev
 ---
 
-# Learn about MagLev
+# MagLevについて知る
 
-## Basic MagLev Object Persistence
+## 基本的なMagLevオブジェクトの永続化
 
-MagLev brings a transparent, distributed object space to Ruby.
-To try it yourself, make sure you've [installed
-MagLev](/docs/get_started.html), and that the MagLev server is running.
+MagLevはRubyに透明、分散オブジェクトをもたらします。
+試すには [MagLevを始めるには](/maglev.github.com/docs/get_started.html) を見てMagLevサーバーを起動してください。
 
-First, fire up a `maglev-irb` session (since we'll be using two different
-irb sessions, I've set the prompts to "One" and "Two" to make it easier to
-follow along).
+まず、 `maglev-irb` (ここでは2つのirbセッションを使うので分かりやすいように"One"、"Two"とプロンプトを分けます)を起動します。
 
     $ maglev-irb
     One :001:0>
 
-MagLev comes pre-seeded with a persistent hash named
-`Maglev::PERSISTENT_ROOT`.  It is a convenient starting place to put
-objects that you want to share with other VMs.  We'll put a message into
-that hash and then save it:
+MagLevにはあらかじめ `Maglev::PERSISTENT_ROOT` という名前の永続化しているハッシュを持っています。
+これは他のVMに共有したいオブジェクトを起き始めるのに便利です。
+このハッシュにメッセージをおいて保存します:
 
     One :001:0> Maglev::PERSISTENT_ROOT[:demo] = "Message from maglev-irb #1"
     => "Message from maglev-irb #1"
     One :002:0> Maglev.commit_transaction
     => true
 
-Now, we can start a new `maglev-irb` session and see the message:
+次に新しく `maglev-irb` セッションを起動してさっきのメッセージを見てみましょう:
 
     $ maglev-irb
     Two :001:0> Maglev::PERSISTENT_ROOT[:demo]
     => "Message from maglev-irb #1"
 
-Cool!
+すごい!
 
-MagLev's persistence model is persistence by reachability.  That means that
-when MagLev persists (saves) `an_object`, all objects reachable from
-`an_object` (by following references held in instance variables) are also
-persisted. `Maglev::PERSISTENT_ROOT` is simply a persistent hash, so when
-it is saved, all objects it references (i.e., the keys and values) are also
-saved (as well as any objects they reference, and so on).
+MagLevの永続化モデルはpersistence by reachabilityです。
+これはMagLevが `あるオブジェクト` を永続化(保存)したい時、 `あるオブジェクト` (下記の記事ではインスタん変数に保持されている)からアクセス可能な全てのオブジェクトも永続化されるということです。
+`Maglev::PERSISTENT_ROOT` は単純に永続性のハッシュで、保存される時
+(つまりキーと値)も保存されます(これらが参照するあらゆるオブジェクトも同様です)。
 
-So, we can create a "complex" object, and send it from irb process Two back
-to irb process One.  First, we create a normal array and fill it with
-objects:
+従って、"複雑な"オブジェクトを作成し、irbTwoプロセスからそれをirbOneプロセスに送り返すことができます。
+まず、何かオブジェクトを入れた普通の配列を作ります:
 
     Two :002:0> my_array = Array.new
     => []
@@ -56,53 +49,46 @@ objects:
 
 Then, we hook it into the persistent graph by putting the array into
 `PERSISTENT_ROOT`, and committing the change:
+それから、配列を `PERSISTENT_ROOT` に入れて、変化を委任することによってそれを持続的なグラフに接続します:
 
     Two :005:0> Maglev::PERSISTENT_ROOT[:demo] = my_array
     => ["Hello from #2", Mon Oct 17 13:45:52 -0700 2011]
     Two :006:0> Maglev.commit_transaction
     => true
 
-Since PERSISTENT_ROOT is persistent, and it references the array, and the
-array references both the string and the time object, all of that will now
-be available to other VMs.  We can check by switching to the first
-`maglev-irb` session and taking a look:
+PERSISTENT_ROOTは永続性で、それは配列を参照し、そしてその配列はStringとTimeオブジェクトを持ち、他のVMでも使えるようになります。
+最初の `maglev-irb` セッションに切り替えて確認します。
 
     One :003:0> Maglev::PERSISTENT_ROOT[:demo]
     => "Message from maglev-irb #1"
 
-Hmmm...the first irb session still sees the old value.  To coordinate
-changes to the shared object space, MagLev uses transactions.  We need to
-refresh our transactional view in order to see the new data:
+うーん、、、最初のirbセッションはまだ古い値を見ています。
+共有されたオブジェクト空間に変更を調整するためMagLevはトランザクションを使います。
+新しいデータを見るためにトランザクションをリフレッシュさせる必要があります:
 
     One :004:0> Maglev.abort_transaction
     => Maglev::System
     One :005:0> Maglev::PERSISTENT_ROOT[:demo]
     => ["Hello from #2", Mon Oct 17 13:45:52 -0700 2011]
 
-Now we see the new data from irb Two. Most of the standard Ruby
-objects are already capable of being persisted (there are a few that
-don't make sense to see in another VM, like Mutex and Socket).  You
-can even persist `Proc`s and `Thread`s and run them on other VMs:
+これでirbTwoから新しいデータを見ることができます。標準的なRubyオブジェクトの多くはもう永続化することができます。(MutexやSocketのように幾つか他のVMで見えないものもあります)
+`Proc` や `Thread` さえも永続化できます:
 
     One :006:0> Maglev::PERSISTENT_ROOT[:run_me] = Proc.new { puts "Hi from another VM" }
     => #<Proc>
     One :007:0> Maglev.commit_transaction
     => true
 
-And we can run it from the other VM:
+そして他のVMから実行できます:
 
     Two :007:0> Maglev.abort_transaction
     => Maglev::System
     Two :008:0> Maglev::PERSISTENT_ROOT[:run_me].call
     Hi from another VM
 
-You could even make a simple [worker
-queue](https://github.com/jc00ke/maglev-q) in a few lines of Ruby by
-passing procs between VMs.
+ProcをVMの間で渡すRubyのコード数行でシンプルな [worker queue](https://github.com/jc00ke/maglev-q) を作成できます。
 
-Threads cannot be persisted by reference (because the JIT may have
-compiled methods to machine code, which cannot be ported across
-VMs), but we can use a trick.
+Threadは(JITはメソッドをマシン語にコンパイルしていて、それはVMをまたぐことができないので)参照によって永続化されませんが、あるトリックを使えます。
 
     One :009:0> Thread.start { callcc {|cc| $cont = cc}; p "Run after One pretty callcc" }
     "Run after One pretty callcc"
@@ -112,15 +98,14 @@ VMs), but we can use a trick.
     One :011:0> Maglev.commit_transaction
     => true
 
-What did we do here? Well, we started a thread and created a
-continuation. A continuation captures the state of a computation,
-effectively copying the stack at the point it was created (We can see
-in the inspection output that the continuation has a reference to a
-_copy_ of the Thread that created it). We assign the continuation to a
-global variable for convenience, and then commit it to the Stone
-repository.
+何をしたのでしょうか？ええと、スレッドを作って永続化を始めましょう。
+永続化は計算の状態を読み取り、永続化された時点でのスタックをコピーします。
+(永続化されたオブジェクトが、作成されたThreadのコピーを参照することを
+検査プログラムで確認することができます)
+便利のため永続化されたオブジェクトをグローバル変数に代入し、Stoneレポジトリに
+コミットしています。
 
-On to the second VM:
+2番目のVMで:
 
     Two :009:0> Maglev.abort_transaction
     => true
@@ -130,10 +115,8 @@ On to the second VM:
     "Run after One pretty callcc"
     => #<GsProcess:0xdd33b01 sleep>
 
-Wow. We just copied a complete thread on to a different VM and resumed
-it there.
+スレッドを別のVMにコピーして再開できました。
 
-So much for examples, more example code can be found in the
-[hat trick example](https://github.com/MagLev/maglev/tree/master/examples/persistence/hat_trick)
-that also demonstrates basic MagLev persistence.
+より多くのコード例は [hat trick example](https://github.com/MagLev/maglev/tree/master/examples/persistence/hat_trick) にあります。
+またこれらはMagLevの永続化の基本的なデモンストレーションでもあります。
 
