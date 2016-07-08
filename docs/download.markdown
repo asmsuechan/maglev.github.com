@@ -12,7 +12,6 @@ MagLevをインストールするには3つの方法があります:
 
 ## 必要環境
 
-* 64-bit hardware. There are no plans for a 32-bit version.
 * 64ビットハードウェア。32ビット対応の予定はありません。
 * 64ビットLinux、Mac OS XまたはSolaris X86。
 * Rubyとrakeをインストールに使用します。
