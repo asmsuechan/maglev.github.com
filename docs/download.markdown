@@ -2,7 +2,6 @@
 layout: default
 title: Install MagLev
 ---
-# Install MagLev
 # MagLevのインストール
 
 MagLevをインストールするには3つの方法があります:
