@@ -3,27 +3,24 @@ layout: docs
 title: Persistent Code
 ---
 
-## Persistent Code
+## コードの永続化
 
-MagLev persists Ruby code as well as Ruby objects.  You can install code
-once, and share with all VMs.  MagLev lets you have either persistent or
-non-persistent code.  By default (i.e., if you do nothing), when MagLev
-reads a ruby file, the code is loaded transiently.  This is just like
-regular ruby: each VM loads code, and when the VM exits, the code
-disappears.
+MagLevはRubyコードもRubyオブジェクトと同様に永続化します。一度コードを
+インストールして全てのVMで共有します。MagLevは永続化と永続化しないコードを
+持たせます。デフォルトでは、MagLevがrubyファイルを読んだ時、そのコードは
+一時的にロードされます。これは通常のRubyのそれぞれのVMがコードをロードし、VMが存在する時そのコードが消えるのと同じようなものです。
 
 ## <code>Maglev.persistent do ... end</code>
 
-To follow along with this example, go to the hat trick directory:
+この例を実行するためにhat_trickディレクトリに移動してください:
 
     $ cd $MAGLEV_HOME/examples/persistence/hat_trick
 
-`rabbit.rb` defines a simple class with one method:
+`rabbit.rb` には1つのメソッドがシンプルなクラスに定義されています:
 
 
 {% highlight ruby %}
-# This class defines the Rabbit, which just prints an ASCII art
-# representation of a rabbit.
+# このクラスはアスキーアートのうさぎを定義します
 class Rabbit
   def inspect
     "\n () ()\n( '.' )\n(\")_(\")\n"
@@ -31,17 +28,14 @@ class Rabbit
 end
 {% endhighlight %}
 
-If you run this file, not much happens.  A VM starts up, reads in the code,
-defines a transient class named `Rabbit`, then exits, destroying all of
-that work.  You cannot access `Rabbit` from a new VM:
+このファイルを実行しても何も起こりません。VMが起動して、このコードを読み、 `Rabbit` クラスを定義し、次にexitし、全てを破壊します。
+`Rabbit` には新しいVMからアクセスできません:
 
     $ maglev-ruby rabbit.rb 
     $ maglev-ruby -e 'puts Rabbit.new.inspect'
     ERROR 2730 , uninitialized constant Rabbit (NameError)
 
-`maglev-ruby` provides a `-Mcommit` option that will run within the context
-of a `Maglev.persistent` block, and do a commit on exit.  So we can do
-this:
+`maglev-ruby` は `Maglev.persistent` ブロックのコンテキストで実行する `-Mcommit` オプションを提供しています。ですので以下を実行できます:
 
     $ maglev-ruby -Mcommit rabbit.rb 
     $ maglev-ruby -e 'puts Rabbit.new.inspect'
@@ -50,7 +44,7 @@ this:
     ( '.' )
     (")_(")
 
-The `maglev-ruby -Mcommit rabbit.rb` line is equivalent to:
+`maglev-ruby -Mcommit rabbit.rb` は以下と等しいです:
 
 {% highlight ruby %}
 Maglev.persistent do
@@ -59,8 +53,7 @@ end
 Maglev.commit_transaction
 {% endhighlight %}
 
-We can also persistently monkey patch a class. Create a new file,
-`breed.rb`:
+モンキーパッチのクラスも永続化できます。 `breed.rb`という新ファイルを作成します:
 
 {% highlight ruby %}
 Maglev.persistent do
@@ -74,12 +67,11 @@ end
 Maglev.commit_transaction
 {% endhighlight %}
 
-Since this version has the `persistent` block baked in, we just run the file:
+このコードには `永続化` ブロックがあるので以下を実行するだけでいいです:
 
     $ maglev-ruby breed.rb
 
-And now we start a fresh VM, and we will immediately have access to the new
-method:
+新しいVMをスタートして、すぐに新しいメソッドにアクセスしましょう:
 
     $ maglev-irb
     irb(main):001:0> Rabbit.breed
@@ -107,7 +99,7 @@ method:
     ]
     irb(main):002:0>
 
-# Details
+# 詳細
 
-For details, read the [Persistence Documentation](https://github.com/MagLev/maglev/blob/master/docs/persistence-api.rdoc).
+詳細は [永続化ドキュメント](https://github.com/MagLev/maglev/blob/master/docs/persistence-api.rdoc) をご覧ください。
 
