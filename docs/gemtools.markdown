@@ -4,65 +4,57 @@ layout: docs
 gemtools_version: GemTools-1.0-beta.8.7-310x
 ---
 
-# GemTools Smalltalk Browser for MagLev
+# MagLev用Gemtools Smalltalk Browser
 
-GemTools is a Smalltalk Development environment that can be used to view
-the Smalltalk source code built into the MagLev image.  You can view the
-same information with Topaz (the built-in command line debugger/inspector),
-but GemTools provides a nice GUI for interacting with the image.
+GemToolsはSmalltalkのソースコードをMagLevに構築するのに使われるSmalltalkの開発環境です。
+同じ情報をTopaz(ビルトインコマンドラインデバッガー/インスペクター)によって得ることもできまが、GemToolsはイメージと対話式の良いGUIを提供しています。
 
-The GemTools download includes everything you need to run Pharo Smalltalk
-on Linux and OSX.
+GemToolsはPharo SmallltalkをLinuxとOSXで動かすのに必要な全てをダウンロードします。
 
-## Install GemTools
+## GemToolsのインストール
 
-1. Download [{{page.gemtools_version}}](http://seaside.gemstone.com/squeak/{{page.gemtools_version}}.zip)
-1. Unzip the archive.
-   You should have a directory named `{{page.gemtools_version}}.app`.
+1. ダウンロード [{{page.gemtools_version}}](http://seaside.gemstone.com/squeak/{{page.gemtools_version}}.zip)
+1. アーカイブを解凍
+   `{{page.gemtools_version}}.app` このようなディレクトリ名にした方がいいです。
 
-   OSX users may want to move it to `/Applications`.
+   OSXユーザーは `/Application` に移動したくなるでしょう。
 
-## Run GemTools
+## GemToolsの実行
 
-1. Ensure the MagLev stone is running:
+1. MagLev stoneが実行されていることを保証する:
 
        $ cd $MAGLEV_HOME
        $ rake maglev:start
 
-1. Ensure a `netldi` process is running:
+1. `netldi` プロセスが実行されていることを保証する:
 
        $ cd $MAGLEV_HOME
        $ rake netldi:start
 
-1. Start GemTools
+1. GemToolsを起動
 
-   OSX users can either `open {{page.gemtools_version}}.app` or open it from
-   the Finder as a normal OSX app.
+   OSXユーザーは `open {{page.gemtools_version}}.app` またはFinderから普通の
+   OSXアプリとしてFinderから起動してください。
 
-   Linux users can run `{{page.gemtools_version}}.app/Pharo.sh`.
+   Linuxユーザーは `{{page.gemtools_version}}.app/Pharo.sh` で起動してください。
 
-1. Connect to MagLev
+1. MagLevに繋ぐ
 
-   After the Pharo Smalltalk process opens, you'll need to connect to the
-   MagLev stone.  To do that, select "MagLev" in the GemTools Launcher
-   window, and then click "Login".
+   Pharo Smalltalkプロセスが立ち上がった後、MagLev stoneに繋げる必要があります。
+   GemToolsランチャーウィンドウの"MagLev"を選んで"Login"をクリックしてください。
 
-   The first time you login, you'll be asked for your first and last name.
-   This allows the Monticello source code system to know who is making
-   changes (just like adding your user info into `~/.gitconfig`).
+   始めてログインする時、氏名を尋ねられます。これは( `~/.gitconfig` にユーザー情報を追加するように)Monticelloソースコードシステムに誰が変更を加えるか伝えることができます。
 
-## Browse some source code
+## ソースコードを見る
 
-After you've logged into the image, you can look at some MagLev code by:
+イメージに入った後、MagLevのコードを見れます:
 
-1. Click the "Find..." button
-1. Select "Hierarchy browser"
-2. Enter "Kernel" into the dialog and hit enter (or click "Ok").
+1. "Find..."ボタンをクリック
+1. "Hierarchy browser"を選択
+1. "Kernel"に入ってエンターキーを押すか"Ok"をクリック
 
-You can explore the source code from here.
+ここからソースコードを探す事ができます。
 
-## Sharing `netldi` between Smalltalk and MagLev
+## SmalltalkとMagLevの `netldi` を共有
 
-If you are a GemStone/S Smalltalk user, and would like Smalltalk and MagLev
-to use the same locks directory (one `netldi` to rule them all), then run
-`$MAGLEV_HOME/setupLocks.sh`.
+もしGemStone/S Smalltalkユーザー、もしくはSmalltalkとMagLevを同じロックディレクトリで使いたいならなら `$MAGLEV_HOME/setupLocks.sh` を実行してください。
